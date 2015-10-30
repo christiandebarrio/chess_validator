@@ -1,5 +1,18 @@
 require 'pry'
 
+module Movements
+
+	def straight position_ini, position_end
+		@position_ini[0] == position_end[0] || @position_ini[1] == position_end[1]
+	end
+
+	def diagonal position_ini, position_end
+		position_ini.sort
+		position_end.sort
+		position_ini[0] - position_ini[1] == position_end[0] - position[1]
+	end
+end
+
 class Board
 	
 	def initialize list_pieces
@@ -25,14 +38,14 @@ class Board
 		puts @piece
 	end
 
-	def empty?
+	def destination_empty?
 		@board[@move_end[0]][@move_end[1]] == nil
 	end
 
 	def check_move
 		select_piece_on_board
 		create_piece_with_position(@piece_selected)
-		if @piece.rule_movement?(@move_end) && empty?
+		if @piece.rule_movement?(@move_end) && destination_empty?
 			puts "LEGAL"
 		else
 			puts "ILEGAL"
@@ -53,6 +66,7 @@ class Board
 end
 
 class Piece
+	include Movements
 
 	def initialize position_ini
 		@position_ini = position_ini
@@ -64,15 +78,26 @@ class Rook < Piece
 	attr_accessor :position
 
 	def rule_movement? position_end
-		@position_ini[0] == position_end[0] || @position_ini[1] == position_end[1]
+		straight(@position_ini, position_end)
+	end
+
+end
+
+class Queen < Piece
+	attr_accessor :position
+
+	def rule_movement? position_end
+
 	end
 
 end
 
 
 
+
 list_pieces = {
 	bR: Rook,
+	bQ: Queen,
 }
 
 chess = Board.new list_pieces
