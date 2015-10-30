@@ -5,6 +5,7 @@ class Board
 	def initialize list_pieces
 		@board = Array.new(8) { Array.new(8) }
 		@board[0][0] = :bR
+		@board[1][5] = :bR
 		@list_pieces = list_pieces
 	end
 
@@ -16,16 +17,22 @@ class Board
 	end
 
 	def select_piece_on_board
-		name_piece = @board[@move_ini[0]][@move_ini[1]]
+		@piece_selected = @board[@move_ini[0]][@move_ini[1]]		
+	end
+
+	def create_piece_with_position name_piece
 		@piece = @list_pieces[name_piece].new @move_ini
 		puts @piece
+	end
 
-
+	def empty?
+		@board[@move_end[0]][@move_end[1]] == nil
 	end
 
 	def check_move
 		select_piece_on_board
-		if @piece.rule_movement? @move_end
+		create_piece_with_position(@piece_selected)
+		if @piece.rule_movement?(@move_end) && empty?
 			puts "LEGAL"
 		else
 			puts "ILEGAL"
@@ -56,15 +63,13 @@ end
 class Rook < Piece
 	attr_accessor :position
 
-	def initialize position_ini
-		super
-	end
-
 	def rule_movement? position_end
 		@position_ini[0] == position_end[0] || @position_ini[1] == position_end[1]
 	end
 
 end
+
+
 
 list_pieces = {
 	bR: Rook,
