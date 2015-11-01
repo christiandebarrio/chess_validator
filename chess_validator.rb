@@ -2,72 +2,76 @@ require 'pry'
 
 module Movements
 
-	def straight position_ini, position_end
-		position_ini[0] == position_end[0] || position_ini[1] == position_end[1]
+	def straight coordinate_ini, coordinate_end
+		coordinate_ini[0] == coordinate_end[0] || coordinate_ini[1] == coordinate_end[1]
 	end
 
-	def diagonal position_ini, position_end
-		position_ini.sort
-		position_end.sort
-		position_ini[0] - position_ini[1] == position_end[0] - position_end[1]
+	def diagonal coordinate_ini, coordinate_end
+		coordinate_ini.sort
+		coordinate_end.sort
+		coordinate_ini[0] - coordinate_ini[1] == coordinate_end[0] - coordinate_end[1]
 	end
+
+
 end
 
 class Board
 	
-	def initialize list_pieces
+	def initialize coordinate_ini, coordinate_end, list_pieces
 		@board = Array.new(8) { Array.new(8) }
-		@board[5][5] = :bQ
-		@board[3][3] = :bR
+		@coordinate_ini = coordinate_ini
+		@coordinate_end = coordinate_end
 		@list_pieces = list_pieces
-
-	end
-
-	def move
-		@move_ini = [5, 5]
-		@move_end = [3, 3]
-
+		@board[5][5] = :wQ
+		@board[3][3] = :bR
 		check_move
-	end
-
-	def select_piece_on_board
-		@piece_selected = @board[@move_ini[0]][@move_ini[1]]
-		puts @piece_selected
-	end
-
-	def create_piece_with_position name_piece
-		@piece = @list_pieces[name_piece].new @move_ini
-		puts @piece
-	end
-
-	def destination_empty?
-		@board[@move_end[0]][@move_end[1]] == nil
 	end
 
 	def check_move
 		select_piece_on_board
-		create_piece_with_position(@piece_selected)
-		if @piece.rule_movement?(@move_end) || destination_empty?
+		create_piece_with_position_and_color
+		if @piece.rule_movement?(@coordinate_end) && destination_empty?
 			puts "LEGAL"
 		else
 			puts "ILEGAL"
 		end
 	end
 
- 
+	def select_piece_on_board
+		@piece_selected = @board[@coordinate_ini[0]][@coordinate_ini[1]]
+	end
+
+	def create_piece_with_position_and_color
+		if @piece_selected[0] == "b"
+			color = "black"
+		elsif @piece_selected[0] == "w"
+			color = "white"
+		end
+		@piece = @list_pieces[@piece_selected].new(@coordinate_ini, color)
+		puts @piece
+		puts @piece.color
+		puts @coordinate_ini
+		puts @coordinate_end
+	end
+
+	def destination_empty?
+		@board[@coordinate_end[0]][@coordinate_end[1]] == nil
+	end
+
 end
 
 class ChessValidator
+	attr_accessor :list_pieces, :coordinate_ini, :coordinate_end
 
-	def initialize
-		#Board.new list_pieces
+	def initialize list_pieces
+		@list_pieces = list_pieces
 	end
 
 	def make_move string_coordinates
 		string_to_coordinate string_coordinates
 		@coordinate_ini = convert_coordinate(@coordinate_ini)
 		@coordinate_end = convert_coordinate(@coordinate_end)
-		@board = Board.new list_pieces
+		@board = Board.new(@coordinate_ini, @coordinate_end, @list_pieces)
 	end
 
 	def string_to_coordinate string
@@ -86,51 +90,49 @@ end
 class Piece
 	include Movements
 
-	def initialize position_ini
-		@position_ini = position_ini
+	attr_accessor :color
+
+	def initialize coordinate_ini, color
+		@coordinate_ini = coordinate_ini
+		@color = color
 	end
 end
 
 
 class Rook < Piece
-	attr_accessor :position
 
-	def rule_movement? position_end
-		straight(@position_ini, position_end)
+	def rule_movement? coordinate_end
+		straight(@coordinate_ini, @coordinate_end)
 	end
 
 end
 
 class Queen < Piece
-	attr_accessor :position
 
-	def rule_movement? position_end
-		straight(@position_ini, position_end) && diagonal(@position_ini, position_end)
+	def rule_movement? coordinate_end
+		straight(@coordinate_ini, coordinate_end) || diagonal(@coordinate_ini, coordinate_end)
 	end
 
 end
+ 
 
 
 
 
 list_pieces = {
 	bR: Rook,
+	wR: Rook,
 	bQ: Queen,
+	wQ: Queen,
 }
 
-chessvalidator = ChessValidator.new
-chessvalidator.make_move("a2 a3")
+validate = ChessValidator.new(list_pieces)
+validate.make_move("f5 f0")
 
-# chess.add_piece :bR
 
 # KING –> REY
-
 # ROOK –> TORRE
-
 # PAWN –> PEÓN
-
 # KNIGHT –> CABALLO
-
 # QUEEN –> DAMA
-
 # BISHOP –> ALFIL
