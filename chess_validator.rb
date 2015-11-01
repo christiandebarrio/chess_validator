@@ -22,7 +22,7 @@ class Board
 		@coordinate_ini = coordinate_ini
 		@coordinate_end = coordinate_end
 		@list_pieces = list_pieces
-		@board[5][5] = :wQ
+		@board[0][5] = :wQ
 		@board[3][3] = :bR
 		check_move
 	end
@@ -80,9 +80,11 @@ class ChessValidator
 	end
 
 	def convert_coordinate coordinate
-		coordinate[0] = coordinate[0].ord - 97
-		coordinate[1] = coordinate[1].to_i
-		coordinate
+		convert_coordinate = []
+		convert_coordinate[0] = 8 - coordinate[1].to_i
+		convert_coordinate[1] = coordinate[0].ord - 97
+		convert_coordinate
+		binding.pry
 	end
 end
 
@@ -127,7 +129,7 @@ list_pieces = {
 }
 
 validate = ChessValidator.new(list_pieces)
-validate.make_move("f5 f0")
+validate.make_move("a5 f0")
 
 
 # KING –> REY
