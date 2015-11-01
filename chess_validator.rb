@@ -48,7 +48,7 @@ class Board
     @coordinate_end = coordinate_end
     @list_pieces = list_pieces
     @board[4][3] = :wP
-    @board[3][3] = :bR
+    @board[6][3] = :bR
     check_move
   end
 
@@ -174,6 +174,7 @@ class Pawn < Piece
           one_step_vertical(@coordinate_ini, coordinate_end) && up(@coordinate_ini, coordinate_end)
         end
     end
+    true
   end
 
 end
