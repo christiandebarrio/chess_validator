@@ -1,4 +1,5 @@
 require 'pry'
+require 'rspec'
 
 module Movements
 
@@ -47,7 +48,7 @@ class Board
     @coordinate_ini = coordinate_ini
     @coordinate_end = coordinate_end
     @list_pieces = list_pieces
-    @board[4][3] = :wP
+    @board[4][0] = :wR
     @board[6][3] = :bR
     check_move
   end
@@ -192,8 +193,25 @@ list_pieces = {
   wP: Pawn,
 }
 
-validate = ChessValidator.new(list_pieces)
-validate.make_move("d4 d5")
+RSpec.describe "Chess Validator" do
+  it "Rook moves from d4 to d6 returns true" do
+    expect(ChessValidator.new(list_pieces).make_move("d4 d6")).to be_truthy
+  end
+end
+
+RSpec.describe "Rook movement" do
+  it "Rook moves from [4, 3] to [1, 3] returns true" do
+    expect(Rook.new([4, 3], "white").rule_movement?([1, 3])).to be true
+  end
+
+  it "Rook moves from [4, 3] to [1, 0] returns false" do
+    expect(Rook.new([4, 3], "white").rule_movement?([1, 0])).to be false
+  end
+end
+
+
+validate = ChessValidator.new(list_pieces).make_move("d4 d6")
+
 
 
 # KING –> REY
